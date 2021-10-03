@@ -1,6 +1,7 @@
 # watermark
 Simple python program to add watermark on photos
 
+Requirements:
 pip install pillow
 
 Usage:
