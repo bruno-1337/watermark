@@ -3,7 +3,7 @@ import sys
 
 from PIL import Image
 
-EXTS = ('.jpg', '.png')
+EXTS = ('.jpg', '.png', '.jpeg')
 
 if len(sys.argv) < 3:
     print('Usage: marcadagua.py \'pasta das imagens\' \'localização do logo (logo.png caso esteja na mesma pasta)\' [topoesquerda, topodireita, esquerdabaixo, direitabaixo, centro]')
@@ -21,31 +21,41 @@ logoWidth = logo.width
 logoHeight = logo.height
 
 
-for filename in os.listdir(path):
-    if any([filename.lower().endswith(ext) for ext in EXTS]) and filename != lgo:
-        image = Image.open(path + '/' + filename)
-        imageWidth = image.width
-        imageHeight = image.height
+subpastas = []
+x=0
+for root, subdirectories, files in os.walk(path):
+    for subdirectory in subdirectories:
+        subpastas.append(os.path.join(root, subdirectory))
+        x+=1
 
-        try:
-            if pos == 'topoesquerda':
-                image.paste(logo, (0, 0), logo)
-            elif pos == 'topodireita':
-                image.paste(logo, (imageWidth - logoWidth, 0), logo)
-            elif pos == 'esquerdabaixo':
-                image.paste(logo, (0, imageHeight - logoHeight), logo)
-            elif pos == 'direitabaixo':
-                image.paste(logo, (imageWidth - logoWidth, imageHeight - logoHeight), logo)
-            elif pos == 'centro':
+
+for i in subpastas:
+    path = i
+    for filename in os.listdir(path):
+        if any([filename.lower().endswith(ext) for ext in EXTS]) and filename != lgo:
+            image = Image.open(path + '/' + filename)
+            imageWidth = image.width
+            imageHeight = image.height
+
+            try:
+                if pos == 'topoesquerda':
+                    image.paste(logo, (0, 0), logo)
+                elif pos == 'topodireita':
+                    image.paste(logo, (imageWidth - logoWidth, 0), logo)
+                elif pos == 'esquerdabaixo':
+                    image.paste(logo, (0, imageHeight - logoHeight), logo)
+                elif pos == 'direitabaixo':
+                    image.paste(logo, (imageWidth - logoWidth, imageHeight - logoHeight), logo)
+                elif pos == 'centro':
+                    image.paste(logo, (int((imageWidth - logoWidth)/2), int((imageHeight - logoHeight)/2)), logo)
+                else:
+                    print('Error: ' + pos + ' is not a valid position')
+                    print('Usage: marcadagua.py \'pasta das imagens\' \'localização do logo (logo.png caso esteja na mesma pasta)\' [topoesquerda, topodireita, esquerdabaixo, direitabaixo, centro]')
+
+                image.save(path + '/' + filename)
+                print('Marca dagua adicionada em ' + path + '/' + filename)
+
+            except:
                 image.paste(logo, (int((imageWidth - logoWidth)/2), int((imageHeight - logoHeight)/2)), logo)
-            else:
-                print('Error: ' + pos + ' is not a valid position')
-                print('Usage: marcadagua.py \'pasta das imagens\' \'localização do logo (logo.png caso esteja na mesma pasta)\' [topoesquerda, topodireita, esquerdabaixo, direitabaixo, centro]')
-
-            image.save(path + '/' + filename)
-            print('Marca dagua adicionada em ' + path + '/' + filename)
-
-        except:
-            image.paste(logo, (int((imageWidth - logoWidth)/2), int((imageHeight - logoHeight)/2)), logo)
-            image.save(path + '/' + filename)
-            print('Marca dagua padrao adicionada em ' + path + '/' + filename)
+                image.save(path + '/' + filename)
+                print('Marca dagua padrao adicionada em ' + path + '/' + filename)
